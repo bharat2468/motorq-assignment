@@ -25,7 +25,10 @@ function App() {
     const { isLoading, isError, data: response, error } = useQuery({
         queryKey: ["currentUser"],
         queryFn: getCurrentUser,
-        retry: false,
+        retry: 1,
+        refetchOnWindowFocus: false, // Disable automatic refetching on window focus
+		refetchOnMount: false,     // Disable automatic refetching on component mount
+		staleTime: 1000 * 60 * 60,
     });
 
     useEffect(() => {

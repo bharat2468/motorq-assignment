@@ -72,7 +72,9 @@ const googleAuthHandler = asyncHandler(async (req, res) => {
 			username,
 			email: email.toLowerCase(),
 			avatar: picture,
-			password
+			password,
+			role:"admin"
+
 		});
 	}
 
@@ -141,6 +143,7 @@ const registerUser = asyncHandler(async (req, res) => {
 		password,
 		username: username.toLowerCase(),
 		avatar: avatarCloudUrl,
+		role:"admin"
 	});
 
 	// Check for the created user and exclude password and refreshToken

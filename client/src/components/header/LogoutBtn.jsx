@@ -8,7 +8,7 @@ const LogoutBtn = () => {
 	const dispatch = useDispatch();
     const navigate = useNavigate();
 
-	const { mutate, isLoading, isError, error } = useMutation({
+	const { mutate, isPending, isError, error } = useMutation({
 		mutationFn: logout,
 		onSuccess: (response) => {
 			// Assuming the API returns user data on successful login
@@ -30,9 +30,9 @@ const LogoutBtn = () => {
 		<>
 			<button
 				className="btn btn-primary"
-				disabled={isLoading}
+				disabled={isPending}
 				onClick={handleClick}>
-				{isLoading ? "Logging out..." : "Logout"}
+				{isPending ? "Logging out..." : "Logout"}
 			</button>
 			{isError && (
 				<p className="text-error text-sm mt-2">

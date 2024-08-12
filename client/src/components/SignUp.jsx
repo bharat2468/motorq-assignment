@@ -35,7 +35,7 @@ function Signup() {
 		}
 	}, [avatar]);
 
-	const { mutate, isLoading, isError, error } = useMutation({
+	const { mutate, isPending, isError, error } = useMutation({
 		mutationFn: signUp,
 		onSuccess: (response) => {
 			console.log(response.data.data);
@@ -69,7 +69,7 @@ function Signup() {
 
 					<div className="avatar my-4 relative">
 						<div className="w-24 rounded-full ring ring-primary ring-offset-base-100 ring-offset-2 mx-auto">
-							{isLoading ? (
+							{isPending ? (
 								<div className="loading loading-spinner loading-lg"></div>
 							) : avatarPreview ? (
 								<img src={avatarPreview} alt="Avatar preview" />
@@ -169,8 +169,8 @@ function Signup() {
 						<button
 							type="submit"
 							className="btn btn-primary w-full"
-							disabled={isLoading || registrationSuccess}>
-							{isLoading ? "Signing Up..." : "Sign Up"}
+							disabled={isPending || registrationSuccess}>
+							{isPending ? "Signing Up..." : "Sign Up"}
 						</button>
 						<GoogleButton isSignUp={true} />
 						{isError && (

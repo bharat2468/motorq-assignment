@@ -18,7 +18,7 @@ function Login() {
 		formState: { errors },
 	} = useForm();
 
-	const { mutate, isLoading, isError, error } = useMutation({
+	const { mutate, isPending, isError, error } = useMutation({
 		mutationFn: login,
 		onSuccess: (response) => {
 			// Assuming the API returns user data on successful login
@@ -120,8 +120,8 @@ function Login() {
 						<button
 							type="submit"
 							className="btn btn-primary w-full"
-							disabled={isLoading}>
-							{isLoading ? "Signing In..." : "Sign In"}
+							disabled={isPending}>
+							{isPending ? "Signing In..." : "Sign In"}
 						</button>
 
 						<GoogleButton/>
