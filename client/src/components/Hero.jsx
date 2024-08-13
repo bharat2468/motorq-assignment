@@ -2,13 +2,11 @@ import { Link } from "react-router-dom";
 import { GoArrowRight } from "react-icons/go";
 import Container from "./Container";
 import { useSelector } from "react-redux";
-import lightImage from '/hero-bg-light.jpg';
-import darkImage from '/hero-bg-dark.jpg';
+import image from '/hero-bg.jpg';
+
 
 const Hero = () => {
-    const theme = useSelector((state) => state.ui.theme);
-    const image = theme === "light" ? lightImage : darkImage;
-
+    
     return (
         <section
             className="w-screen h-screen bg-cover bg-center py-20 md:py-32 lg:py-40 relative"
@@ -19,12 +17,10 @@ const Hero = () => {
                         <div className="grid gap-8 md:grid-cols-2 md:gap-12 lg:gap-16">
                             <div className="space-y-4 mt-20">
                                 <h1 className="text-4xl font-bold tracking-tight text-primary-foreground sm:text-5xl md:text-6xl lg:text-7xl">
-                                    Project
+                                Vehicle-Driver Mapping App
                                 </h1>
                                 <p className="max-w-[700px] text-lg text-primary-foreground md:text-xl">
-                                    Explore a world of insights, stories, and
-                                    perspectives from diverse
-                                    experiences.
+                                Efficiently Connect Drivers with Vehicles – Streamline your fleet management with our all-in-one platform. Simplify assignments, optimize schedules, and ensure every vehicle is on the road when needed.
                                 </p>
                                 <Link
                                     to="/"

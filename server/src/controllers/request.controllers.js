@@ -5,27 +5,27 @@ import { Driver } from "../models/driver.models.js";
 import { Vehicle } from "../models/vehicle.models.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
-import Agenda from 'agenda';
+import { agenda } from "../utils/agenda.js";
 import moment from 'moment';
 
-// Initialize Agenda
-const agenda = new Agenda({ db: { address: process.env.MONGO_DB_URL} });
 
 // Create a request
 const createRequest = asyncHandler(async (req, res) => {
-    const { driverId, vehicleId, startTime, endTime } = req.body;
+    const { driverId, licensePlate, startTime, endTime } = req.body;
+    console.log(req.body);
+    
 
     const driver = await Driver.findById(driverId);
     if (!driver) {
         throw new ApiError(404, "Driver not found");
     }
 
-    const vehicle = await Vehicle.findById(vehicleId);
+    const vehicle = await Vehicle.findOne({ licensePlate });
     if (!vehicle) {
         throw new ApiError(404, "Vehicle not found");
     }
 
-    const request = await Request.create({ driver: driverId, vehicle: vehicleId, startTime, endTime });
+    const request = await Request.create({ driver: driverId, vehicle: vehicle._id, startTime, endTime });
 
     return res
         .status(201)
@@ -82,7 +82,7 @@ const getRequestsForDriver = asyncHandler(async (req, res) => {
     return res.status(200).json(new ApiResponse(200, validRequests, "Requests retrieved successfully"));
 });
 
-// Accept request and update driver and vehicle statuses
+
 const acceptRequest = asyncHandler(async (req, res) => {
     const requestId = req.params.requestId;
     const currentTime = moment().toDate();
@@ -92,22 +92,18 @@ const acceptRequest = asyncHandler(async (req, res) => {
     if (!request) {
         throw new ApiError(404, "Request not found");
     }
-    console.log(request);
+
+    if (request.status !== 'pending') {
+        throw new ApiError(400, "Request is not in a pending state");
+    }
 
     // Validate that the current time is within the request's time window
     if (currentTime < request.startTime || currentTime > request.endTime) {
         throw new ApiError(400, "Request is not within the valid time window");
     }
 
-    if (request.status !== 'pending') {
-        throw new ApiError(400, "Request is not in a pending state");
-    }
-
     // Fetch the vehicle
     const vehicle = await Vehicle.findById(request.vehicle);
-    console.log(vehicle);
-
-    // Check if the vehicle is available
     if (!vehicle || !vehicle.isAvailable) {
         throw new ApiError(400, "Vehicle is not available");
     }
@@ -119,7 +115,7 @@ const acceptRequest = asyncHandler(async (req, res) => {
     }
 
     // Assign the vehicle to the driver
-    driver.vehicle = request.vehicle;
+    driver.assignedVehicleId = request.vehicle;
     await driver.save();
 
     // Mark the vehicle as unavailable
@@ -130,12 +126,11 @@ const acceptRequest = asyncHandler(async (req, res) => {
     request.status = 'accepted';
     await request.save();
 
-    // Define and schedule the job to reset vehicle and driver
-    agenda.define('reset vehicle and driver', async (job) => {
-        const { vehicleId, driverId } = job.attrs.data;
-
-        await Vehicle.findByIdAndUpdate(vehicleId, { isAvailable: true });
-        await Driver.findByIdAndUpdate(driverId, { vehicle: undefined });
+    // Schedule the job to reset vehicle and driver
+    console.log('Scheduling job:', {
+        vehicleId: request.vehicle,
+        driverId: request.driver,
+        endTime: moment(request.endTime).toDate()
     });
 
     agenda.schedule(moment(request.endTime).toDate(), 'reset vehicle and driver', {
@@ -145,7 +140,6 @@ const acceptRequest = asyncHandler(async (req, res) => {
 
     return res.status(200).json(new ApiResponse(200, request, "Request accepted successfully"));
 });
-
 
 // Reject request
 const rejectRequest = asyncHandler(async (req, res) => {

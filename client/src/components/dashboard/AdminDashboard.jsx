@@ -28,6 +28,9 @@ function AdminDashboard() {
 						<li>
 							<Link to="/admin/users">Users</Link>
 						</li>
+						<li>
+							<Link to="/admin/drivers">Drivers</Link>
+						</li>
 					</>
 				</ul>
 			</div>

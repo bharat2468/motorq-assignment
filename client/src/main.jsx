@@ -12,6 +12,9 @@ import {
 	Login,
 	Signup,
 	Profile,
+	CreateDriver,
+	VehicleStatus,
+	DriverRequest,
 } from "./pages/index.js";
 import { GoogleOAuthProvider } from "@react-oauth/google";
 import {
@@ -21,6 +24,7 @@ import {
 	Users,
 	Protected,
 	Unauthorized,
+	Drivers,
 } from "./components/index.js";
 
 const queryClient = new QueryClient();
@@ -28,7 +32,7 @@ const queryClient = new QueryClient();
 const nestedAdminRoute = {
 	path: "admin",
 	element: (
-		<Protected authentication={true} adminOnly={true}>
+		<Protected authentication={true}>
 			<AdminDashboard />
 		</Protected>
 	),
@@ -40,6 +44,10 @@ const nestedAdminRoute = {
 		{
 			path: "users",
 			element: <Users />,
+		},
+		{
+			path: "drivers",
+			element: <Drivers />,
 		},
 	],
 };
@@ -82,7 +90,30 @@ const router = createBrowserRouter([
 					</Protected>
 				),
 			},
-
+			{
+				path: "/create-driver",
+				element: (
+					<Protected authentication={true}>
+						<CreateDriver />
+					</Protected>
+				),
+			},
+			{
+				path: "/vehicle-status/:driverId",
+				element: (
+					<Protected authentication={true}>
+						<VehicleStatus />
+					</Protected>
+				),
+			},
+			{
+				path:"/driver-request",
+				element: (
+					<Protected authentication={true}>
+						<DriverRequest />
+					</Protected>
+				),
+			},
 			nestedAdminRoute,
 		],
 	},

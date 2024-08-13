@@ -1,6 +1,6 @@
 import React from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Container, Logo, LogoutBtn } from "../index";
+import { Container, Logo, UserOptionsButton } from "../index";
 import ThemeToggle from "./Themetoggle";
 import { useSelector } from "react-redux";
 
@@ -17,15 +17,20 @@ function Header() {
             active: true,
         },
         {
+            name: "Create Driver",
+            slug: "/create-driver",
+            active: authStatus && isAdmin,
+        },
+        {
             name: "Admin Dashboard",
             slug: "/admin",
             active: authStatus && isAdmin,
         },
         {
-            name:"Profile",
-            slug:"/profile",
-            active: authStatus
-        }
+            name: "Driver Requests",
+            slug: "/driver-request",
+            active: authStatus,
+        },
     ];
 
     const authButtons = [
@@ -96,7 +101,7 @@ function Header() {
 
                 <div className="navbar-end">
                     {authStatus ? (
-                        <LogoutBtn />
+                        <UserOptionsButton />
                     ) : (
                         authButtons.map((item) => (
                             <button
