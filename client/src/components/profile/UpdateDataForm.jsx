@@ -24,7 +24,7 @@ function UpdateDataForm({ user, setShowPasswordForm }) {
         },
     });
 
-    const { mutate: updateProfile, isLoading: isUpdating, isError: isUpdateError, error: updateError } = useMutation({
+    const { mutate: updateProfile, isPending: isUpdating, isError: isUpdateError, error: updateError } = useMutation({
         mutationFn: updateUserData,
         onSuccess: (data) => {
             queryClient.setQueryData(['currentUser'], data);
@@ -33,7 +33,7 @@ function UpdateDataForm({ user, setShowPasswordForm }) {
         },
     });
 
-    const { mutate: deleteProfile, isLoading: isDeleting, isError: isDeleteError, error: deleteError } = useMutation({
+    const { mutate: deleteProfile, isPending: isDeleting, isError: isDeleteError, error: deleteError } = useMutation({
         mutationFn: deleteUser,
         onSuccess: () => {
             // Handle successful deletion (e.g., redirect to login page)

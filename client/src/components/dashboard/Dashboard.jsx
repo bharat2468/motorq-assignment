@@ -1,100 +1,105 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+import { FaCar, FaUsers, FaFileAlt } from 'react-icons/fa';
+import { MdAccessTime } from 'react-icons/md';
+import { fetchDashboardStats } from "../../api/requests";
+import { useQuery} from "@tanstack/react-query";
+import { Loading, Error } from "../index";
 
 function Dashboard() {
-	// This data should be fetched from your API
-	const stats = {
-		users: 1000,
-		comments: 5000,
-		posts: 500,
-	};
 
-	const recentData = {
-		users: [
-			{ id: 1, name: "John Doe", email: "john@example.com" },
-			{ id: 2, name: "Jane Smith", email: "jane@example.com" },
-			// ... more users
-		],
-		comments: [
-			{ id: 1, user: "John Doe", content: "Great post!" },
-			{ id: 2, user: "Jane Smith", content: "Very informative." },
-			// ... more comments
-		],
-		posts: [
-			{ id: 1, title: "Introduction to React", author: "John Doe" },
-			{
-				id: 2,
-				title: "Advanced JavaScript Techniques",
-				author: "Jane Smith",
-			},
-			// ... more posts
-		],
-	};
+    let {
+		isLoading,
+		isError,
+		data: response,
+		error,
+	} = useQuery({
+		queryKey: ["dashboard-stats"],
+		queryFn: fetchDashboardStats,
+	});
+	console.log(response);
+	response = response?.data?.data;
+	console.log(response);
+	
 
-	return (
-		<div className="p-4">
-			<h1 className="text-2xl font-bold mb-4">Dashboard</h1>
-
-			<div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-				<div className="card bg-base-100 shadow-xl">
-					<div className="card-body">
-						<div className="stat-title">Total Users</div>
-						<div className="stat-value">{stats.users}</div>
-					</div>
-				</div>
-				<div className="card bg-base-100 shadow-xl">
-					<div className="card-body">
-						<div className="stat-title">Total Comments</div>
-						<div className="stat-value">{stats.comments}</div>
-					</div>
-				</div>
-				<div className="card bg-base-100 shadow-xl">
-					<div className="card-body">
-						<div className="stat-title">Total Posts</div>
-						<div className="stat-value">{stats.posts}</div>
-					</div>
-				</div>
+	if (isLoading) {
+		return (
+			<div className="w-full h-[80vh] flex justify-center items-center">
+				<Loading className="w-20" />
 			</div>
+		);
+	}
 
-			<div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-8">
-				<div className="card bg-base-100 shadow-xl">
-					<div className="card-body">
-						<h2 className="card-title">Recent Users</h2>
-						<ul>
-							{recentData.users.map((user) => (
-								<li key={user.id}>
-									{user.name} - {user.email}
-								</li>
-							))}
-						</ul>
-					</div>
-				</div>
-				<div className="card bg-base-100 shadow-xl">
-					<div className="card-body">
-						<h2 className="card-title">Recent Comments</h2>
-						<ul>
-							{recentData.comments.map((comment) => (
-								<li key={comment.id}>
-									{comment.user}: {comment.content}
-								</li>
-							))}
-						</ul>
-					</div>
-				</div>
-				<div className="card bg-base-100 shadow-xl">
-					<div className="card-body">
-						<h2 className="card-title">Recent Posts</h2>
-						<ul>
-							{recentData.posts.map((post) => (
-								<li key={post.id}>
-									{post.title} by {post.author}
-								</li>
-							))}
-						</ul>
-					</div>
-				</div>
-			</div>
-		</div>
-	);
+	if (isError) {
+		console.error(error);
+		return <Error />;
+	}
+
+
+    return (
+        <div className="p-4">
+            <h1 className="text-2xl font-bold mb-4">Dashboard</h1>
+
+            {/* Dashboard Stats */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="flex items-center bg-base-100 shadow-xl p-4 rounded-lg">
+                    <FaUsers className="text-3xl mr-4" />
+                    <div>
+                        <h2 className="text-lg font-bold">Total Drivers</h2>
+                        <p className="text-2xl">{response.driverCount}</p>
+                    </div>
+                </div>
+                <div className="flex items-center bg-base-100 shadow-xl p-4 rounded-lg">
+                    <FaCar className="text-3xl mr-4" />
+                    <div>
+                        <h2 className="text-lg font-bold">Total Vehicles</h2>
+                        <p className="text-2xl">{response.vehicleCount}</p>
+                    </div>
+                </div>
+            </div>
+
+            {/* Recent Drivers and Vehicles */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-8">
+                <div className="bg-base-100 shadow-xl p-4 rounded-lg">
+                    <h2 className="text-xl font-bold mb-2 flex items-center">
+                        <FaUsers className="mr-2" /> Recent Drivers
+                    </h2>
+                    <ul>
+                        {response.recentDrivers.map(driver => (
+                            <li key={driver._id} className="mb-2">
+                                {driver.name} - {driver.email}
+                            </li>
+                        ))}
+                    </ul>
+                </div>
+                <div className="bg-base-100 shadow-xl p-4 rounded-lg">
+                    <h2 className="text-xl font-bold mb-2 flex items-center">
+                        <FaCar className="mr-2" /> Recent Vehicles
+                    </h2>
+                    <ul>
+                        {response.recentVehicles.map(vehicle => (
+                            <li key={vehicle._id} className="mb-2">
+                                {vehicle.model} - {vehicle.make}
+                            </li>
+                        ))}
+                    </ul>
+                </div>
+            </div>
+
+            {/* Recent Requests */}
+            <div className="bg-base-100 shadow-xl p-4 rounded-lg mt-8">
+                <h2 className="text-xl font-bold mb-2 flex items-center">
+                    <MdAccessTime className="mr-2" /> Recent Requests
+                </h2>
+                <ul>
+                    {response.recentRequests.map(request => (
+                        <li key={request._id} className="mb-2">
+                            Request ID: {request._id} - Status: {request.status}
+                        </li>
+                    ))}
+                </ul>
+            </div>
+        </div>
+    );
 }
 
 export default Dashboard;

@@ -13,7 +13,7 @@ function UpdatePasswordForm({ setShowPasswordForm }) {
         watch,
     } = useForm();
 
-    const { mutate, isLoading, isError, error } = useMutation({
+    const { mutate, isPending, isError, error } = useMutation({
         mutationFn: changePassword,
         onSuccess: (data) => {
             console.log("Password changed successfully:", data);
@@ -91,8 +91,8 @@ function UpdatePasswordForm({ setShowPasswordForm }) {
                         onClick={() => setShowPasswordForm(false)}>
                         Back to Profile
                     </button>
-                    <button type="submit" className="btn btn-primary" disabled={isLoading}>
-                        {isLoading ? "Changing..." : "Change Password"}
+                    <button type="submit" className="btn btn-primary" disabled={isPending}>
+                        {isPending ? "Changing..." : "Change Password"}
                     </button>
                 </div>
 

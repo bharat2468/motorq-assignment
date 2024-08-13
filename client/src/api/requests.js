@@ -16,9 +16,14 @@ const rejectRequest = async (requestId) => {
     return await api.patch(`/requests/reject/${requestId}`);
 };
 
+const fetchDashboardStats = async () => {
+    return await api.get('/requests/dashboard-stats');
+};
+
 export {
     createRequest,
     getRequestsForDriver,
     acceptRequest,
-    rejectRequest
+    rejectRequest,
+    fetchDashboardStats,
 };

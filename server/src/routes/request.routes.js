@@ -6,6 +6,7 @@ import {
 	getRequestsForDriver,
 	acceptRequest,
 	rejectRequest,
+	dashboard,
 } from "../controllers/request.controllers.js";
 import { verifyJWT } from "../middlewares/auth.middleware.js";
 
@@ -32,6 +33,8 @@ router.route("/accept/:requestId").patch(verifyJWT, acceptRequest);
 
 // Reject a request
 router.route("/reject/:requestId").patch(verifyJWT, rejectRequest);
+
+router.route("/dashboard-stats").get(verifyJWT, dashboard);
 
 
 export default router;

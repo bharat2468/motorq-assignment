@@ -9,7 +9,7 @@ function AvatarUpload() {
     const queryClient = useQueryClient()
     const { register, handleSubmit, formState: { errors } } = useForm();
 
-    const { mutate, isLoading, isError, error } = useMutation({
+    const { mutate, isPending, isError, error } = useMutation({
         mutationFn: updateAvatar,
         onSuccess: (response) => {
             console.log(response.data);
@@ -42,7 +42,7 @@ function AvatarUpload() {
             <input
                 type="file"
                 className="file-input file-input-bordered w-full max-w-xs mb-4"
-                disabled={isLoading}
+                disabled={isPending}
                 {...register("avatar", {
                     required: "Please select an image",
                     validate: {
@@ -61,12 +61,12 @@ function AvatarUpload() {
             <button 
                 type="submit" 
                 className="btn btn-primary"
-                disabled={isLoading}
+                disabled={isPending}
             >
                 Upload Avatar
             </button>
 
-            {isLoading && (
+            {isPending && (
                 <p className="text-sm text-blue-500">New image is uploading...</p>
             )}
 
