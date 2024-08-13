@@ -3,7 +3,7 @@ import { Container, VehicleStatus as VehicleStatusComponent } from "../component
 
 function VehicleStatus() {
     return (
-        <Container className="my-20">
+        <Container className="my-20 min-h-screen">
             <VehicleStatusComponent />
         </Container>
     );

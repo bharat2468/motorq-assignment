@@ -8,9 +8,10 @@ function DriverRequest() {
     const [driverId, setDriverId] = useState("");
     const [searchTriggered, setSearchTriggered] = useState(false);
 
-    // State variables for success messages
+    // State variables for success and error messages
     const [acceptSuccess, setAcceptSuccess] = useState(false);
     const [rejectSuccess, setRejectSuccess] = useState(false);
+    const [errorMessage, setErrorMessage] = useState("");
 
     const {
         data: response,
@@ -39,7 +40,9 @@ function DriverRequest() {
             setTimeout(() => setAcceptSuccess(false), 1000); // Hide success message after 1 second
         },
         onError: (error) => {
-            console.error("Accept request failed:", error);
+            const message = error?.response?.data?.message || "Accept request failed";
+            setErrorMessage(message); // Show error message
+            setTimeout(() => setErrorMessage(""), 1000); // Hide error message after 1 second
         },
     });
 
@@ -51,7 +54,9 @@ function DriverRequest() {
             setTimeout(() => setRejectSuccess(false), 1000); // Hide success message after 1 second
         },
         onError: (error) => {
-            console.error("Reject request failed:", error);
+            const message = error?.response?.data?.message || "Reject request failed";
+            setErrorMessage(message); // Show error message
+            setTimeout(() => setErrorMessage(""), 1000); // Hide error message after 1 second
         },
     });
 
@@ -109,7 +114,14 @@ function DriverRequest() {
                 </div>
             )}
 
-            <table className="table-auto w-full">
+            {/* Error message */}
+            {errorMessage && (
+                <div className="alert alert-error">
+                    {errorMessage}
+                </div>
+            )}
+
+            <table className="table w-full">
                 <thead>
                     <tr>
                         <th>Vehicle ID</th>
@@ -121,7 +133,7 @@ function DriverRequest() {
                 </thead>
                 <tbody>
                     {response?.data?.data.map((request) => (
-                        <tr key={request._id}>
+                        <tr key={request._id} className="hover">
                             <td>{request.vehicle}</td>
                             <td>{new Date(request.startTime).toLocaleString()}</td>
                             <td>{new Date(request.endTime).toLocaleString()}</td>

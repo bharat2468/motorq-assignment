@@ -64,7 +64,20 @@ const getVehicle = asyncHandler(async (req, res) => {
 		.json(new ApiResponse(200, vehicle, "Vehicle retrieved successfully"));
 });
 
+
+// Get all vehicles
+const getAllVehicles = asyncHandler(async (req, res) => {
+    const vehicles = await Vehicle.find();
+
+    if (!vehicles.length) {
+        throw new ApiError(404, "No vehicles found");
+    }
+
+    return res.status(200).json(new ApiResponse(200, vehicles, "Vehicles retrieved successfully"));
+});
+
 export {
 	//createVehicle, updateVehicle, deleteVehicle,
 	getVehicle,
+	getAllVehicles,
 };

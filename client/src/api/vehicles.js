@@ -4,6 +4,11 @@ const getVehicle = async (vehicleId) => {
     return await api.get(`/vehicles/get/${vehicleId}`);
 };
 
+const getAllVehicles = async () => {
+    return await api.get("/vehicles/get-all");
+}
+
 export {
-    getVehicle
+    getVehicle,
+    getAllVehicles,
 };

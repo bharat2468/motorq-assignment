@@ -15,6 +15,7 @@ import Profile from "./profile/Profile";
 import Dashboard from "./dashboard/Dashboard";
 import Users from "./dashboard/Users";
 import Drivers from "./dashboard/Drivers";
+import Vehicles from "./dashboard/Vehicles";
 import Loading from "./Loading"
 import Hero from "./Hero";
 import Unauthorized from "./Unauthorized";
@@ -44,4 +45,5 @@ export {
 	Unauthorized,
 	VehicleStatus,
 	DriverRequest,
+	Vehicles,
 };

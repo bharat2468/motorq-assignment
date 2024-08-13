@@ -25,6 +25,7 @@ import {
 	Protected,
 	Unauthorized,
 	Drivers,
+	Vehicles,
 } from "./components/index.js";
 
 const queryClient = new QueryClient();
@@ -49,6 +50,10 @@ const nestedAdminRoute = {
 			path: "drivers",
 			element: <Drivers />,
 		},
+		{
+			path:"vehicles",
+			element: <Vehicles />,
+		}
 	],
 };
 
