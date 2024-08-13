@@ -87,10 +87,56 @@ const getAllDrivers = asyncHandler(async (req, res) => {
     return res.status(200).json(new ApiResponse(200, drivers, "Drivers retrieved successfully"));
 });
 
+const searchDrivers = asyncHandler(async (req, res) => {
+    const { name, state, city, phone } = req.body;
+
+    // Create a match stage for MongoDB aggregation pipeline
+    const matchStage = {};
+
+    // Add match conditions based on provided filters
+    if (name) {
+        matchStage.name = { $regex: new RegExp(name, "i") }; // Case-insensitive match for name
+    }
+
+    if (state) {
+        matchStage["location.state"] = { $regex: new RegExp(state, "i") }; // Case-insensitive match for state
+    }
+
+    if (city) {
+        matchStage["location.city"] = { $regex: new RegExp(city, "i") }; // Case-insensitive match for city
+    }
+
+    if (phone) {
+        matchStage.phone = { $regex: new RegExp(phone, "i") }; // Case-insensitive match for phone
+    }
+    
+    // Build the aggregation pipeline
+    const pipeline = [
+        { $match: matchStage },
+    ];
+
+    try {
+        // Execute the aggregation pipeline
+        const drivers = await Driver.aggregate(pipeline).exec();
+
+        if (drivers.length === 0) {
+            throw new ApiError(404, "No drivers found with the specified filters");
+        }
+
+        // Send a successful response
+        return res.status(200).json(new ApiResponse(200, drivers, "Drivers retrieved successfully"));
+    } catch (error) {
+        // Handle any errors that occur during the aggregation
+        console.error("Error searching drivers:", error);
+        throw new ApiError(500, "Server error while searching for drivers");
+    }
+});
+
 export {
-	createDriver,
-	// updateDriver,
-	// deleteDriver,
-	getDriver,
-	getAllDrivers,
+    createDriver,
+    // updateDriver,
+    // deleteDriver,
+    getDriver,
+    getAllDrivers,
+    searchDrivers,
 };

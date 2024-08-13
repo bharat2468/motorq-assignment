@@ -33,4 +33,5 @@ router.route("/accept/:requestId").patch(verifyJWT, acceptRequest);
 // Reject a request
 router.route("/reject/:requestId").patch(verifyJWT, rejectRequest);
 
+
 export default router;

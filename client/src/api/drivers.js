@@ -12,8 +12,14 @@ const getAllDrivers = async () => {
     return await api.get("/drivers/get-all");
 };
 
+const searchDrivers = async (searchParams) => {
+    const response = await api.post('/drivers/searchDrivers', searchParams);
+    return response.data;
+};
+
 export {
     createDriver,
     getDriver,
-    getAllDrivers
+    getAllDrivers,
+    searchDrivers,
 };

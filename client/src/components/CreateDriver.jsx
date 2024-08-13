@@ -1,25 +1,32 @@
 import React, { useState } from "react";
-import { useForm } from "react-hook-form";
-import { QueryClient,useMutation } from "@tanstack/react-query";
-import { createDriver } from "../api/drivers.js"; // API function to create a driver
+import { useForm, Controller } from "react-hook-form";
+import { QueryClient, useMutation } from "@tanstack/react-query";
+import { createDriver } from "../api/drivers.js";
 import { Input } from "./index";
+import Select from "react-select";
+import { statesAndCities } from "./dashboard/StatesAndCities.js"; // Make sure this path is correct
 
 function CreateDriver() {
     const [creationSuccess, setCreationSuccess] = useState(false);
+    const [cities, setCities] = useState([]);
     const queryClient = new QueryClient();
     const {
         register,
         handleSubmit,
+        control,
         formState: { errors },
+        watch,
     } = useForm();
+
+    const selectedState = watch("state");
 
     const { mutate, isPending, isError, error } = useMutation({
         mutationFn: createDriver,
         onSuccess: () => {
             setCreationSuccess(true);
-            queryClient.invalidateQueries(["drivers"]); // Invalidate drivers list cache
+            queryClient.invalidateQueries(["drivers"]);
             setTimeout(() => {
-                setCreationSuccess(false) // Redirect to drivers list after success
+                setCreationSuccess(false)
             }, 2000);
         },
         onError: (error) => {
@@ -28,8 +35,30 @@ function CreateDriver() {
     });
 
     const onSubmit = async (data) => {
-        mutate(data);
+        const driverData = {
+            ...data,
+            location: {
+                state: data.state?.value,
+                city: data.city?.value
+            }
+        };
+        mutate(driverData);
     };
+
+    const stateOptions = Object.keys(statesAndCities).map(state => ({
+        value: state,
+        label: state
+    }));
+
+    React.useEffect(() => {
+        if (selectedState) {
+            const cityOptions = statesAndCities[selectedState.value].map(city => ({
+                value: city,
+                label: city
+            }));
+            setCities(cityOptions);
+        }
+    }, [selectedState]);
 
     return (
         <div className="flex items-center justify-center min-h-screen bg-base-100">
@@ -89,16 +118,48 @@ function CreateDriver() {
                             <p className="text-error text-sm">{errors.phone.message}</p>
                         )}
 
-                        <Input
-                            label="Location:"
-                            placeholder="Enter driver's location"
-                            {...register("location", {
-                                required: "Location is required",
-                            })}
-                        />
-                        {errors.location && (
-                            <p className="text-error text-sm">{errors.location.message}</p>
-                        )}
+                        <div>
+                            <label className="label">
+                                <span className="label-text">State:</span>
+                            </label>
+                            <Controller
+                                name="state"
+                                control={control}
+                                rules={{ required: "State is required" }}
+                                render={({ field }) => (
+                                    <Select
+                                        {...field}
+                                        options={stateOptions}
+                                        placeholder="Select State"
+                                    />
+                                )}
+                            />
+                            {errors.state && (
+                                <p className="text-error text-sm">{errors.state.message}</p>
+                            )}
+                        </div>
+
+                        <div>
+                            <label className="label">
+                                <span className="label-text">City:</span>
+                            </label>
+                            <Controller
+                                name="city"
+                                control={control}
+                                rules={{ required: "City is required" }}
+                                render={({ field }) => (
+                                    <Select
+                                        {...field}
+                                        options={cities}
+                                        isDisabled={!selectedState}
+                                        placeholder="Select City"
+                                    />
+                                )}
+                            />
+                            {errors.city && (
+                                <p className="text-error text-sm">{errors.city.message}</p>
+                            )}
+                        </div>
 
                         <button
                             type="submit"
